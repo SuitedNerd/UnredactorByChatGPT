@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Redaction Integrity Analyzer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 8px 32px rgba(255, 255, 0, 0.3);
+            border: 1px solid rgba(255, 255, 0, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            color: #FFD700;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #FFD700;
+            background: rgba(255, 255, 255, 0.05);
+            color: #FFD700;
+        }
+
+        button {
+            padding: 10px 25px;
+            border-radius: 10px;
+            border: none;
+            background: #FFD700;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #fff;
+            color: #FFD700;
+            transform: scale(1.05);
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .leak {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 5px solid #FFD700;
+            border-radius: 10px;
+            color: #000;
+            backdrop-filter: blur(5px);
+        }
+
+        h2 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .qr {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Redaction Integrity Analyzer</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="files" multiple required>
+            <button type="submit">Upload & Analyze</button>
+        </form>
+
+        {% if all_results %}
+        <div class="results">
+            {% for filename, leaks in all_results.items() %}
+            <h2>{{ filename }}</h2>
+            {% if leaks %}
+            <p>[Warning]: Recoverable text found!</p>
+            {% for leak in leaks %}
+            <div class="leak">
+                <strong>Page {{ leak.page }}:</strong><br>
+                {{ leak.snippet | e }}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>[Success]: No recoverable text found!</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
